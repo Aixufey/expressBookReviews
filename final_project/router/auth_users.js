@@ -6,7 +6,13 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
+  //write code to check is the username is valid
+  const foundUser = users.find(user => user.username === username)
+  if (foundUser) {
+    return true
+  }
+  
+  return false;
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
