@@ -70,16 +70,27 @@ public_users.get("/isbn/:isbn", function (req, res) {
 
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
-    //Write your code here
-    const { author } = req.params;
-    const foundBook = Object.values(books).find(
+  //Write your code here
+  new Promise((res, rej) => {
+    setTimeout(() => {
+      const { author } = req.params;
+      const foundBook = Object.values(books).find(
         (book) => book.author === author
-    );
-    if (foundBook) {
-        return res.status(200).json(foundBook);
-    } else {
-        return res.status(404).json({ message: "Book not found" });
-    }
+      );
+
+      if (foundBook) {
+        res(foundBook);
+      } else {
+        rej("Book not found");
+      }
+    }, 1500);
+  }).then(book => {
+    return res.status(200).json(book);
+  }).catch(err => {
+    return res.status(404).json({ message: err });
+  })
+    
+    
 });
 
 // Get all books based on title
