@@ -88,21 +88,27 @@ public_users.get("/author/:author", function (req, res) {
     return res.status(200).json(book);
   }).catch(err => {
     return res.status(404).json({ message: err });
-  })
-    
-    
+  }) 
 });
 
 // Get all books based on title
 public_users.get("/title/:title", function (req, res) {
-    //Write your code here
-    const { title } = req.params;
-    const foundBook = Object.values(books).find((book) => book.title === title);
-    if (foundBook) {
-        return res.status(200).json(foundBook);
-    } else {
-        return res.status(404).json({ message: "Book not found" });
-    }
+  //Write your code here
+  new Promise((res, rej) => {
+    setTimeout(() => {
+      const { title } = req.params;
+      const foundBook = Object.values(books).find((book) => book.title === title);
+      if (foundBook) {
+        res(foundBook);
+      } else {
+        rej("Book not found");
+      }
+    }, 1500);
+  }).then(book => {
+    return res.status(200).json(book);
+  }).catch(err => {
+    return res.status(404).json({ message: err });
+  })
 });
 
 //  Get book review
