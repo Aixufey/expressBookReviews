@@ -22,7 +22,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
   if (user) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -40,7 +40,7 @@ regd_users.post("/login", (req,res) => {
       token, username
     };
 
-    return res.status(200).send('Login successful')
+    return res.status(200).json({ message: `Login successful`, cookie: token })
   } else { 
     return res.status(400).json({message: "Invalid credentials"})
   }
@@ -49,7 +49,32 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { isbn, review } = req.body;
+  let book;
+
+  if (!isbn) return res.status(401).json({ message: "ISBN is required" });
+
+  if (req.session) {
+    const { username, token } = req.session.authorization;
+    
+    book = books[isbn];
+
+    const foundUser = Object.values(book.reviews).find(item => item.username === username)
+    if (foundUser) {
+      foundUser.review = review;
+    } else {
+      // Auto increment the key for the next review by finding highest key in review object.
+      const nextReviewKey = Math.max(0, ...Object.keys(book.reviews).map(Number)) + 1;
+      // Keep existing review and spread new review into book
+      book.reviews = {
+          ...book.reviews,
+          [nextReviewKey] : {username, review}
+      };
+    }
+    return res.status(200).json(book);
+  } else {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 });
 
 module.exports.authenticated = regd_users;
