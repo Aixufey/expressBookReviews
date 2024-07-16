@@ -36,28 +36,36 @@ public_users.get("/", async function (req, res) {
                 rej("No books found");
             }
         }, 2500);
-    }).then((books) => {
-        return res
-            .status(200)
-            .json(books)
-    }).catch((err) => {
-        return res
-            .status(404)
-            .json({ message: err });
-    });
+    })
+        .then((books) => {
+            return res.status(200).json(books);
+        })
+        .catch((err) => {
+            return res.status(404).json({ message: err });
+        });
 });
 
 // Get book details based on ISBN
 public_users.get("/isbn/:isbn", function (req, res) {
     //Write your code here
-    const { isbn } = req.params;
-    //ID will be used as ISBN
-    const book = books[isbn];
-    if (book) {
-        return res.status(200).json(book);
-    } else {
-        return res.status(404).json({ message: "Book not found" });
-    }
+    new Promise((res, rej) => {
+        setTimeout(() => {
+            const { isbn } = req.params;
+            //ID will be used as ISBN
+            const book = books[isbn];
+            if (book) {
+                res(book);
+            } else {
+                rej("Book not found");
+            }
+        }, 1500);
+    })
+        .then((book) => {
+            return res.status(200).json(book);
+        })
+        .catch((err) => {
+            return res.status(404).json({ message: err });
+        });
 });
 
 // Get book details based on author
